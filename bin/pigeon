@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+
+var Pigeon = require('..');
+
+var p = new Pigeon();
+p.server().listen(8000);
