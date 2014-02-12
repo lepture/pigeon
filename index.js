@@ -14,8 +14,15 @@ var themes = ['paper'];
 var themeCache = {};
 
 
-function Pigeon(config) {
+/**
+ * Pigeon
+ *
+ * Create an instance of Pigeon for sending mails.
+ */
+function Pigeon(config, secret) {
+  // config contains mail services
   this.config = config || {};
+  this.secret = secret || process.env.PIGEON_SECRET;
 }
 
 
@@ -57,7 +64,6 @@ Pigeon.prototype.pickService = function(data) {
  */
 Pigeon.prototype.server = function() {
   var me = this;
-  var token = me.config.secret || process.env.PIGEON_SECRET;
 
   var server = http.createServer(function(req, resp) {
     var secret = req.headers['x-pigeon-secret'];
@@ -72,7 +78,7 @@ Pigeon.prototype.server = function() {
     } else if (req.method !== 'POST' || req.url !== '/send') {
       resp.writeHead(404);
       resp.end('not found');
-    } else if (secret === token && ct === 'application/json') {
+    } else if (secret === me.secret && ct === 'application/json') {
       var buf = '';
       req.setEncoding('utf8');
       req.on('data', function(chunk) { buf += chunk });
