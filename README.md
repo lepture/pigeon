@@ -77,6 +77,13 @@ Email content is also required, but it can be:
 2. html: a html text email
 3. content: pigeon will render a html data from the given content
 
+Optional fields:
+
+1. cc:
+2. bcc:
+3. headers:
+
+
 ## License
 
 MIT

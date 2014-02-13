@@ -60,10 +60,13 @@ Pigeon.prototype.sendMail = function(data, cb) {
     from: config.sender || config.auth.user,
     to: data.user,
     subject: data.title,
+    text: data.text,
+    html: data.html,
+    headers: data.headers,
+    cc: data.cc,
+    bcc: data.bcc
   };
 
-  if (data.text) options.text = data.text;
-  if (data.html) options.html = data.html;
   smtp.sendMail(options, function(err, resp) {
     cb(err, resp);
     smtp.close();
