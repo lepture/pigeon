@@ -9,6 +9,7 @@
 var fs = require('fs');
 var http = require('http');
 var path = require('path');
+var nodemailer = require("nodemailer");
 
 var themes = ['paper'];
 var themeCache = {};
@@ -22,7 +23,7 @@ var themeCache = {};
 function Pigeon(config, secret) {
   // config contains mail services
   this.config = config || {};
-  this.secret = secret || process.env.PIGEON_SECRET;
+  this.secret = secret;
 }
 
 
@@ -34,28 +35,43 @@ Pigeon.prototype.send = function(data, cb) {
 
   if (!data.title) {
     cb('title is required');
-  } else if (data.html) {
-    me.sendHtml(data);
-  } else if (data.text) {
-    me.sendText(data);
+  } else if (data.html || data.text) {
+    me.sendMail(data, cb);
   } else if (data.content) {
     render(data, function(err, html) {
       if (err) {
         cb(err);
       } else {
         data.html = html;
-        me.sendHtml(data, cb);
+        me.sendMail(data, cb);
       }
     });
+  } else {
+    cb('content is required');
   }
 };
-Pigeon.prototype.sendHtml = function(data, cb) {
-  cb && cb();
-};
-Pigeon.prototype.sendText = function(data, cb) {
-  cb && cb();
-};
-Pigeon.prototype.pickService = function(data) {
+Pigeon.prototype.sendMail = function(data, cb) {
+  var me = this;
+
+  // random a choice
+  var keys = Object.keys(me.config);
+  var index = Math.floor(Math.random() * keys.length);
+  if (index >= keys.length) index = keys.length - 1;
+  var config = me.config[keys[index]];
+
+  var smtp = nodemailer.createTransport('SMTP', config);
+  var options = {
+    from: config.sender || config.auth.user,
+    to: data.user,
+    subject: data.title,
+  };
+
+  if (data.text) options.text = data.text;
+  if (data.html) options.html = data.html;
+  smtp.sendMail(options, function(err, resp) {
+    cb(err, resp);
+    smtp.close();
+  });
 };
 
 
@@ -131,9 +147,9 @@ function render(data, cb) {
     if (err) {
       cb(err);
     } else {
-      text.replace(/\{\{title\}\}/g, data.title || '');
-      text.replace(/\{\{content\}\}/g, data.content || '');
-      text.replace(/\{\{footer\}\}/g, data.content || '');
+      text = text.replace(/\{\{title\}\}/g, data.title || '');
+      text = text.replace(/\{\{content\}\}/g, data.content || '');
+      text = text.replace(/\{\{footer\}\}/g, data.content || '');
       cb(null, text);
     }
   });
