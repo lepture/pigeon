@@ -66,7 +66,8 @@ Pigeon.prototype.sendMail = function(data, cb) {
     config = me.config[keys[index]];
   }
 
-  var smtp = nodemailer.createTransport('SMTP', config);
+  var transport = config.transport || 'SMTP';
+  var smtp = nodemailer.createTransport(transport, config);
   var options = {
     from: config.sender || config.auth.user,
     to: data.user,
