@@ -53,19 +53,7 @@ Pigeon.prototype.send = function(data, cb) {
 Pigeon.prototype.sendMail = function(data, cb) {
   var me = this;
 
-  var config;
-
-  if (~data.user.indexOf('@qq.com') && me.config.qq) {
-    config = me.config.qq;
-  } else if (~data.user.indexOf('@gmail.com') && me.config.gmail) {
-    config = me.config.gmail;
-  } else {
-    var keys = Object.keys(me.config);
-    var index = Math.floor(Math.random() * keys.length);
-    if (index >= keys.length) index = keys.length - 1;
-    config = me.config[keys[index]];
-  }
-
+  var config = chooseConfig(data, me.config);
   var transport = config.transport || 'SMTP';
   var smtp = nodemailer.createTransport(transport, config);
   var options = {
@@ -161,6 +149,24 @@ function render(data, cb) {
       cb(null, text);
     }
   });
+}
+
+function chooseConfig(data, configs) {
+  if (data.service && configs[data.service]) {
+    return configs[data.service];
+  }
+
+  if (~data.user.indexOf('@qq.com') && configs.qq) {
+    return configs.qq;
+  } else if (~data.user.indexOf('@gmail.com') && configs.gmail) {
+    return configs.gmail;
+  } else {
+    // random choose
+    var keys = Object.keys(configs);
+    var index = Math.floor(Math.random() * keys.length);
+    if (index >= keys.length) index = keys.length - 1;
+    return configs[keys[index]];
+  }
 }
 
 module.exports = Pigeon;
