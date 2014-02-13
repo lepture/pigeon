@@ -6,6 +6,9 @@
   "scripts": {
     "test": "make test"
   },
+  "bin": {
+    "pigeon": "bin/pigeon"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/lepture/pigeon.git"

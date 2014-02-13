@@ -1,6 +1,94 @@
 #!/usr/bin/env node
 
+var fs = require('fs');
 var Pigeon = require('..');
 
-var p = new Pigeon();
-p.server().listen(8000);
+function main(argv) {
+
+  var getArg = function() {
+    var args = argv.shift();
+    args = args.split('=');
+    if (args.length > 1) {
+      argv.unshift(args.slice(1).join('='));
+    }
+    return args[0];
+  };
+
+  var arg, config, port, secret;
+
+  while (argv.length) {
+    arg = getArg();
+    switch(arg) {
+      case '-c':
+      case '-f':
+      case '--config':
+        config = argv.shift();
+        break;
+      case '-p':
+      case '-P':
+      case '--port':
+        port = argv.shift();
+        break;
+      case '-s':
+      case '-S':
+      case '--secret':
+        secret = argv.shift();
+        break;
+      case '-v':
+      case '-V':
+      case '--version':
+        printVersion();
+        break;
+      case '-h':
+      case '-H':
+      case '--help':
+        printHelp();
+        break;
+      default:
+        break;
+    }
+  }
+
+  // config file
+  config = config || process.env.PIGEON_CONFIG;
+  if (!config) {
+    printHelp(1);
+  }
+  secret = secret || process.env.PIGEON_SECRET;
+  if (!secret) {
+    console.warn('No secret is specified');
+  }
+  config = fs.realpathSync(config);
+  config = require(config);
+
+  var server = new Pigeon(config, secret).server();
+  port = port || process.env.PORT || 8000;
+  console.log('server listen on http://127.0.0.1:' + port);
+  server.listen(port);
+}
+
+main(process.argv.slice(2));
+
+function printVersion() {
+  var pkg = require('../package');
+  console.log('pigeon ' + pkg.version);
+  process.exit();
+}
+
+function printHelp(code) {
+  var lines = [
+    '',
+    '  Usage:',
+    '    pigeon -c config.js',
+    '',
+    '  Options:',
+    '    -c, --config=[file]      filepath of config file',
+    '    -s, --secret=[str]       a secret string token',
+    '    -p, --port=[int]         server listen on this port',
+    '    -v, --version            print the version of vc',
+    '    -h, --help               display this message',
+    ''
+  ];
+  console.log(lines.join('\n'));
+  process.exit(code || 0);
+}
