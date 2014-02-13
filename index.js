@@ -53,11 +53,18 @@ Pigeon.prototype.send = function(data, cb) {
 Pigeon.prototype.sendMail = function(data, cb) {
   var me = this;
 
-  // random a choice
-  var keys = Object.keys(me.config);
-  var index = Math.floor(Math.random() * keys.length);
-  if (index >= keys.length) index = keys.length - 1;
-  var config = me.config[keys[index]];
+  var config;
+
+  if (~data.user.indexOf('@qq.com') && me.config.qq) {
+    config = me.config.qq;
+  } else if (~data.user.indexOf('@gmail.com') && me.config.gmail) {
+    config = me.config.gmail;
+  } else {
+    var keys = Object.keys(me.config);
+    var index = Math.floor(Math.random() * keys.length);
+    if (index >= keys.length) index = keys.length - 1;
+    config = me.config[keys[index]];
+  }
 
   var smtp = nodemailer.createTransport('SMTP', config);
   var options = {
