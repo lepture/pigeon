@@ -62,10 +62,25 @@ Pigeon.prototype.sendMail = function(data, cb) {
     subject: data.title,
     text: data.text,
     html: data.html,
-    headers: data.headers,
     cc: data.cc,
     bcc: data.bcc
   };
+
+  var headers = config.headers || {};
+  if (data.headers) {
+    try {
+      Object.keys(data.headers).forEach(function(key) {
+        headers[key] = data.headers[key];
+      });
+    } catch (e) {
+      cb('error headers');
+      return;
+    }
+  }
+
+  if (Object.keys(headers).length) {
+    options.headers = headers;
+  }
 
   smtp.sendMail(options, function(err, resp) {
     cb(err, resp);
