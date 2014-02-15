@@ -67,32 +67,34 @@ Now send your emails with a `POST` request to the `/send` url path:
 
 ### Request Headers
 
-1. X-Pigeon-Secret: a secret token that is the same with your pigeon server
-2. Content-Type: content type must be in `application/json`
+1. **X-Pigeon-Secret**: a secret token that is the same with your pigeon server
+2. **Content-Type**: content type must be in `application/json`
 
 ### Request Body
 
 The `POST` request payload should in JSON format. Required fields:
 
-1. user: the receiver's email address
-2. title: subject title of the email
+1. **user**: the receiver's email address
+2. **title**: subject title of the email
 
 Email content is also required, but it can be:
 
-1. text: a plain text email
-2. html: a html text email
-3. content: pigeon will render a html data from the given content
+1. **text**: a plain text email
+2. **html**: a html text email
+3. **content**: pigeon will render a html data from the given content
 
 Optional fields:
 
-1. cc: cc field in email
-2. bcc: bcc field in email
-3. headers: email headers
+1. **cc**: cc field in email
+2. **bcc**: bcc field in email
+3. **headers**: email headers
 
 
 ## Deploy to Heroku
 
-You can create a new repo, and use pigeon as a dependency, `app.js`:
+You can create a new repo, and use pigeon as a dependency.
+
+**app.js**:
 
 ```js
 var Pigeon = require('pigeon');
@@ -109,7 +111,7 @@ var server = new Pigeon({
 server.listen(process.env.PORT);
 ```
 
-`Procfile`:
+**Procfile**:
 
 ```
 web: node app.js
