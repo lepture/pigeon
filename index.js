@@ -102,12 +102,19 @@ Pigeon.prototype.server = function() {
     // should return in 10s
     resp.setTimeout(10000);
 
+    var body = '';
+    var headers = {'Content-Type': 'text/plain'};
+
     if (req.url === '/') {
-      resp.writeHead(200);
-      resp.end('humor');
+      body = 'humor';
+      headers['Content-Length'] = body.length;
+      resp.writeHead(200, headers);
+      resp.end(body);
     } else if (req.method !== 'POST' || req.url !== '/send') {
-      resp.writeHead(404);
-      resp.end('not found');
+      body = 'not found';
+      headers['Content-Length'] = body.length;
+      resp.writeHead(404, headers);
+      resp.end(body);
     } else if (secret === me.secret && ct === 'application/json') {
       var buf = '';
       req.setEncoding('utf8');
@@ -117,17 +124,21 @@ Pigeon.prototype.server = function() {
         // data may contain: footer, theme
         var data = JSON.parse(buf);
         me.send(data, function(err) {
-          resp.writeHead(200);
           if (err) {
-            resp.end(err);
+            body = 'error';
           } else {
-            resp.end('ok');
+            body = 'ok';
           }
+          headers['Content-Length'] = body.length;
+          resp.writeHead(200, headers);
+          resp.end(body);
         });
       });
     } else {
-      resp.writeHead(404);
-      resp.end('invalid');
+      body = 'invalid';
+      headers['Content-Length'] = body.length;
+      resp.writeHead(404, headers);
+      resp.end(body);
     }
   });
 
