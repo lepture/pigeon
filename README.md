@@ -1,6 +1,12 @@
 # Pigeon
 
-Sending mails over HTTP.
+Sending mails over HTTP. Pigeon can be used as a library and a command line tool.
+
+## Installation
+
+Install with npm:
+
+    $ npm install pigeon
 
 ## API
 
@@ -79,10 +85,35 @@ Email content is also required, but it can be:
 
 Optional fields:
 
-1. cc:
-2. bcc:
-3. headers:
+1. cc: cc field in email
+2. bcc: bcc field in email
+3. headers: email headers
 
+
+## Deploy to Heroku
+
+You can create a new repo, and use pigeon as a dependency, `app.js`:
+
+```js
+var Pigeon = require('pigeon');
+var server = new Pigeon({
+    gmail: {
+        service: "Gmail",
+        sender: "Mr. Hook <someone@gmail.com>",
+        auth: {
+          user: "someone@gmail.com",
+          pass: "password"
+        }
+  }
+}, 'a-secret-token').server();
+server.listen(process.env.PORT);
+```
+
+`Procfile`:
+
+```
+web: node app.js
+```
 
 ## License
 
