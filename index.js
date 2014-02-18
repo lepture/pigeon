@@ -174,7 +174,7 @@ function render(data, cb) {
     } else {
       text = text.replace(/\{\{title\}\}/g, data.title || '');
       text = text.replace(/\{\{content\}\}/g, data.content || '');
-      text = text.replace(/\{\{footer\}\}/g, data.content || '');
+      text = text.replace(/\{\{footer\}\}/g, data.footer || '');
       cb(null, text);
     }
   });
