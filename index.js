@@ -20,10 +20,13 @@ var themeCache = {};
  *
  * Create an instance of Pigeon for sending mails.
  */
-function Pigeon(config, secret) {
+function Pigeon(config, secret, data) {
   // config contains mail services
   this.config = config || {};
   this.secret = secret;
+
+  // default data
+  this._data = data || {};
 }
 
 
@@ -38,6 +41,7 @@ Pigeon.prototype.send = function(data, cb) {
   } else if (data.html || data.text) {
     me.sendMail(data, cb);
   } else if (data.content) {
+    data.footer = data.footer || me._data.footer || '';
     render(data, function(err, html) {
       if (err) {
         cb(err);
