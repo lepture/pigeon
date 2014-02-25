@@ -1,6 +1,6 @@
 {
   "name": "pigeon",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Sending mails over HTTP.",
   "main": "index.js",
   "scripts": {
